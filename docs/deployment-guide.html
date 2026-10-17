@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ESA Website – Deployment Guide</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 18mm 16mm; }
+  @page cover { margin: 0; }
+  :root { --forest:#0d2617; --leaf:#2e9a4e; --wheat:#eabd2c; --cream:#faf7ef; --ink:#14211a; --muted:#55645b; --line:#e3dccb; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Arial, sans-serif; color: var(--ink); font-size: 10.5pt; line-height: 1.55; margin: 0; }
+  h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; color: var(--forest); }
+  .cover { page: cover; width: 210mm; height: 296mm; display: flex; flex-direction: column; justify-content: space-between; background: var(--forest); color: var(--cream); padding: 30mm 22mm; page-break-after: always; }
+  .cover .tag { color: var(--wheat); letter-spacing: .25em; font-size: 9pt; font-weight: 700; text-transform: uppercase; }
+  .cover h1 { color: var(--cream); font-size: 38pt; line-height: 1.05; margin: 10mm 0 6mm; }
+  .cover p { color: #d9ddd5; font-size: 12pt; max-width: 140mm; }
+  .cover .bar { height: 4px; width: 60mm; background: linear-gradient(90deg, var(--leaf), var(--wheat)); border-radius: 2px; }
+  .cover .meta { font-size: 9.5pt; color: #b9c2bb; }
+  h2 { font-size: 19pt; margin: 0 0 3mm; padding-top: 2mm; border-bottom: 2px solid var(--wheat); padding-bottom: 2mm; }
+  h3 { font-size: 12.5pt; margin: 6mm 0 2mm; }
+  section { page-break-before: always; }
+  section.first { page-break-before: avoid; }
+  p { margin: 0 0 2.5mm; }
+  code { font-family: Consolas, "Courier New", monospace; background: #f2ecdd; padding: 0 3px; border-radius: 3px; font-size: 9.5pt; }
+  pre { font-family: Consolas, "Courier New", monospace; background: #0f1f16; color: #e8f2ea; padding: 3.5mm 4mm; border-radius: 6px; font-size: 9.5pt; line-height: 1.5; white-space: pre-wrap; margin: 1.5mm 0 3.5mm; page-break-inside: avoid; }
+  pre .c { color: #8fb39a; }
+  ol.steps { counter-reset: s; list-style: none; padding: 0; margin: 0; }
+  ol.steps > li { counter-increment: s; position: relative; padding: 0 0 2mm 11mm; margin-bottom: 2mm; page-break-inside: avoid; }
+  ol.steps > li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 7mm; height: 7mm; border-radius: 50%; background: var(--forest); color: var(--wheat); font-weight: 700; font-size: 9.5pt; display: flex; align-items: center; justify-content: center; }
+  ol.steps > li > strong:first-child { display: block; font-size: 11pt; color: var(--forest); }
+  .note, .warn, .tip { border-radius: 6px; padding: 3mm 4mm; margin: 3mm 0; page-break-inside: avoid; font-size: 10pt; }
+  .note { background: #dff3e4; border-left: 4px solid var(--leaf); }
+  .warn { background: #fbf0cd; border-left: 4px solid #d9a514; }
+  .tip { background: #f2ecdd; border-left: 4px solid var(--muted); }
+  table { width: 100%; border-collapse: collapse; margin: 2mm 0 4mm; font-size: 9.5pt; page-break-inside: avoid; }
+  th { background: var(--forest); color: var(--cream); text-align: left; padding: 2mm 3mm; font-weight: 600; }
+  td { border-bottom: 1px solid var(--line); padding: 2mm 3mm; vertical-align: top; }
+  tr:nth-child(even) td { background: #fbf9f3; }
+  .toc { list-style: none; padding: 0; columns: 1; }
+  .toc li { display: flex; justify-content: space-between; border-bottom: 1px dotted var(--line); padding: 1.6mm 0; }
+  .toc span:first-child b { color: var(--leaf); margin-right: 3mm; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+  .card { border: 1px solid var(--line); border-radius: 8px; padding: 4mm; page-break-inside: avoid; }
+  .card h3 { margin-top: 0; }
+  .check li { margin-bottom: 1.2mm; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div>
+    <div class="tag">Ethiopian Seed Association · Website</div>
+    <h1>Deployment Guide</h1>
+    <p>How to run the ESA website on your own computer, build it for production, and publish it on Vercel with your own domain.</p>
+    <div class="bar"></div>
+  </div>
+  <div class="meta">
+    Project: <b>esa-website</b> · Next.js 16 · React 19 · Tailwind CSS 4 · Recharts<br>
+    Version 1.0 · October 2026
+  </div>
+</div>
+
+<section class="first">
+  <h2>Contents</h2>
+  <ul class="toc">
+    <li><span><b>1</b>What you need</span><span>Requirements and accounts</span></li>
+    <li><span><b>2</b>Run it locally</span><span>Development server</span></li>
+    <li><span><b>3</b>Production build on your computer</span><span>Build and start</span></li>
+    <li><span><b>4</b>Deploy on Vercel: GitHub method</span><span>Recommended</span></li>
+    <li><span><b>5</b>Deploy on Vercel: CLI method</span><span>No GitHub needed</span></li>
+    <li><span><b>6</b>Custom domain and environment variables</span><span>Going live</span></li>
+    <li><span><b>7</b>Updating the site</span><span>Content and redeploys</span></li>
+    <li><span><b>8</b>Before launch checklist</span><span>From the Phase 1 report</span></li>
+    <li><span><b>9</b>Troubleshooting</span><span>Common problems</span></li>
+  </ul>
+
+  <h3>Project at a glance</h3>
+  <table>
+    <tr><th style="width:38%">Item</th><th>Location</th></tr>
+    <tr><td>Project folder</td><td><code>Documents\1SPACE\Website\esa-website</code></td></tr>
+    <tr><td>Site text, members, news, publications</td><td><code>src/lib/content.ts</code></td></tr>
+    <tr><td>National seed data for the charts</td><td><code>src/lib/seed-data.ts</code></td></tr>
+    <tr><td>Pages (one folder per URL)</td><td><code>src/app/</code></td></tr>
+    <tr><td>Photos and logos</td><td><code>public/images/</code></td></tr>
+    <tr><td>Contact form endpoint</td><td><code>src/app/api/contact/route.ts</code></td></tr>
+  </table>
+  <div class="note"><b>Verified:</b> on this machine, <code>npm install</code> and <code>npm run build</code> complete successfully and generate 101 pages.</div>
+</section>
+
+<section>
+  <h2>1. What you need</h2>
+  <table>
+    <tr><th style="width:30%">Tool</th><th style="width:25%">Version</th><th>Why</th></tr>
+    <tr><td><b>Node.js</b></td><td>20.9 or newer (22 or 24 LTS recommended)</td><td>Runs Next.js. Includes <code>npm</code>. Download from nodejs.org.</td></tr>
+    <tr><td><b>A terminal</b></td><td>PowerShell, Command Prompt or Git Bash</td><td>To type the commands in this guide.</td></tr>
+    <tr><td><b>Git</b> (for section 4)</td><td>Any recent version</td><td>To push the code to GitHub. Download from git-scm.com.</td></tr>
+    <tr><td><b>GitHub account</b> (section 4)</td><td>Free</td><td>Stores the code; Vercel deploys from it.</td></tr>
+    <tr><td><b>Vercel account</b></td><td>Free Hobby plan to test; Pro for an organisation</td><td>Hosts the site. Sign up at vercel.com.</td></tr>
+  </table>
+  <p>Check what you have installed:</p>
+<pre>node -v      <span class="c"># should print v20.9.0 or higher</span>
+npm -v
+git --version</pre>
+  <div class="tip"><b>Plan note:</b> Vercel's Hobby plan is for personal, non-commercial use. For ESA's official site, use a Pro team owned by ESA so the account stays in ESA's name (requirement C9).</div>
+</section>
+
+<section>
+  <h2>2. Run it locally (development)</h2>
+  <p>The development server reloads the page automatically whenever you save a file. Use it while editing content.</p>
+  <ol class="steps">
+    <li><strong>Open a terminal in the project folder</strong>
+<pre>cd "C:\Users\Administrator\Documents\1SPACE\Website\esa-website"</pre></li>
+    <li><strong>Install dependencies (first time only)</strong>
+      This downloads the libraries into a <code>node_modules</code> folder. It takes 1–3 minutes.
+<pre>npm install</pre></li>
+    <li><strong>Start the development server</strong>
+<pre>npm run dev</pre>
+      You should see <code>Ready</code> and <code>Local: http://localhost:3000</code>.</li>
+    <li><strong>Open the site</strong>
+      Go to <b>http://localhost:3000</b> in your browser. Try the member directory, publications and the seed data dashboard.</li>
+    <li><strong>Stop the server</strong>
+      Press <code>Ctrl + C</code> in the terminal.</li>
+  </ol>
+  <div class="tip"><b>Port already in use?</b> Run on another port: <code>npm run dev -- --port 3100</code>, then open http://localhost:3100.</div>
+  <div class="tip"><b>View on your phone:</b> the terminal also shows a <code>Network:</code> address such as http://192.168.x.x:3000. Open it on a phone connected to the same Wi-Fi. Windows Firewall may ask you to allow Node.js.</div>
+</section>
+
+<section>
+  <h2>3. Production build on your computer</h2>
+  <p>This is exactly what Vercel runs. Doing it locally first catches errors before you deploy.</p>
+  <ol class="steps">
+    <li><strong>Build</strong>
+<pre>npm run build</pre>
+      A successful build ends with a route list and a line like <code>Generating static pages (101/101)</code>. TypeScript errors stop the build and show the file and line.</li>
+    <li><strong>Start the production server</strong>
+<pre>npm start</pre>
+      Open <b>http://localhost:3000</b>. This is the fast, optimised version of the site.</li>
+    <li><strong>Optional: check quality</strong>
+      In Chrome, open DevTools (F12) → <b>Lighthouse</b> → Mobile → Analyze. The Phase 1 target (N2) is a mobile score of 85 or more.</li>
+  </ol>
+
+  <h3>Hosting on a local server or office PC</h3>
+  <p>To keep the site running on a Windows machine on ESA's network, build once, then run <code>npm start</code>. To keep it running after the terminal closes, use a process manager:</p>
+<pre>npm install -g pm2
+pm2 start npm --name esa-website -- start
+pm2 save</pre>
+  <div class="warn">For a public website, Vercel (next sections) is simpler and safer than hosting on an office PC: it gives HTTPS, backups of every deployment, and a global CDN without maintenance.</div>
+</section>
+
+<section>
+  <h2>4. Deploy on Vercel: GitHub method (recommended)</h2>
+  <p>With this method, every change you push to GitHub is deployed automatically, and every version can be rolled back.</p>
+  <ol class="steps">
+    <li><strong>Create an empty repository on GitHub</strong>
+      On github.com click <b>New repository</b>, name it <code>esa-website</code>, choose <b>Private</b>, and do <u>not</u> add a README. Click <b>Create repository</b>.</li>
+    <li><strong>Push the project from your computer</strong>
+<pre>cd "C:\Users\Administrator\Documents\1SPACE\Website\esa-website"
+git init
+git add .
+git commit -m "ESA website v1"
+git branch -M main
+git remote add origin https://github.com/YOUR-ACCOUNT/esa-website.git
+git push -u origin main</pre>
+      The included <code>.gitignore</code> already excludes <code>node_modules</code> and <code>.next</code>, so only source files are uploaded.</li>
+    <li><strong>Import the project into Vercel</strong>
+      Sign in at vercel.com → <b>Add New… → Project</b> → <b>Continue with GitHub</b> → authorise access → choose <code>esa-website</code> → <b>Import</b>.</li>
+    <li><strong>Check the settings</strong>
+      Vercel detects Next.js automatically. Leave the defaults:
+      <table>
+        <tr><th>Setting</th><th>Value</th></tr>
+        <tr><td>Framework Preset</td><td>Next.js</td></tr>
+        <tr><td>Root Directory</td><td><code>./</code> (if you pushed the parent <i>Website</i> folder instead, set it to <code>esa-website</code>)</td></tr>
+        <tr><td>Node.js Version</td><td>22.x or 24.x (Project Settings → Build and Deployment)</td></tr>
+      </table></li>
+    <li><strong>Add the environment variable</strong>
+      Under <b>Environment Variables</b> add <code>SITE_URL</code> = your final address, for example <code>https://esa-website.vercel.app</code>. (See section 6.)</li>
+    <li><strong>Click Deploy</strong>
+      The build takes about 1–2 minutes. When it finishes you get a live address like <b>https://esa-website.vercel.app</b>.</li>
+  </ol>
+</section>
+
+<section>
+  <h2>5. Deploy on Vercel: CLI method</h2>
+  <p>Use this to deploy straight from your computer without GitHub. Good for a quick preview link to share with ESA reviewers.</p>
+  <ol class="steps">
+    <li><strong>Install the Vercel CLI</strong>
+<pre>npm install -g vercel</pre></li>
+    <li><strong>Log in</strong>
+<pre>vercel login</pre>
+      Choose your login method; a browser window opens to confirm.</li>
+    <li><strong>Deploy a preview</strong>
+<pre>cd "C:\Users\Administrator\Documents\1SPACE\Website\esa-website"
+vercel</pre>
+      Answer the questions: <i>Set up and deploy?</i> <b>Y</b> · choose your scope/team · <i>Link to existing project?</i> <b>N</b> · project name <b>esa-website</b> · directory <b>./</b> · keep the detected Next.js settings. You get a <b>preview URL</b>.</li>
+    <li><strong>Add the environment variable</strong>
+<pre>vercel env add SITE_URL production</pre>
+      Paste the production address when asked.</li>
+    <li><strong>Deploy to production</strong>
+<pre>vercel --prod</pre></li>
+  </ol>
+  <div class="grid2">
+    <div class="card"><h3>Preview deployments</h3><p>Every <code>vercel</code> run (or every GitHub branch / pull request) gets its own URL. Use these for ESA review rounds without touching the live site.</p></div>
+    <div class="card"><h3>Rollback</h3><p>In the Vercel dashboard → <b>Deployments</b>, open any earlier deployment → <b>⋯ → Promote to Production</b> (or <b>Instant Rollback</b>).</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>6. Custom domain and environment variables</h2>
+  <h3>Environment variables</h3>
+  <table>
+    <tr><th style="width:25%">Name</th><th style="width:35%">Example</th><th>Used for</th></tr>
+    <tr><td><code>SITE_URL</code></td><td><code>https://www.ethiopianseedassociation.org</code></td><td>Page metadata, <code>sitemap.xml</code> and <code>robots.txt</code>. No trailing slash.</td></tr>
+  </table>
+  <p>After changing an environment variable in Vercel, redeploy (Deployments → latest → <b>Redeploy</b>) for it to take effect.</p>
+  <div class="tip">The domain above is an example only. Use the domain ESA registers in its own name.</div>
+
+  <h3>Connect ESA's domain</h3>
+  <ol class="steps">
+    <li><strong>Add the domain in Vercel</strong>
+      Project → <b>Settings → Domains</b> → enter the domain (e.g. <code>www.your-domain.org</code>) → <b>Add</b>.</li>
+    <li><strong>Create the DNS records at your domain registrar</strong>
+      Vercel shows the exact records to add. Typically:
+      <table>
+        <tr><th>Type</th><th>Name</th><th>Value</th></tr>
+        <tr><td>A</td><td><code>@</code> (root domain)</td><td>the IP address Vercel shows</td></tr>
+        <tr><td>CNAME</td><td><code>www</code></td><td>the CNAME target Vercel shows</td></tr>
+      </table>
+      Always copy the values from your Vercel dashboard, as they can change.</li>
+    <li><strong>Wait for verification</strong>
+      DNS changes take from a few minutes to 48 hours. Vercel issues the HTTPS certificate automatically once the domain points to it.</li>
+    <li><strong>Update <code>SITE_URL</code></strong> to the new domain and redeploy.</li>
+  </ol>
+</section>
+
+<section>
+  <h2>7. Updating the site</h2>
+  <h3>Typical content changes</h3>
+  <table>
+    <tr><th style="width:40%">To change…</th><th>Edit</th></tr>
+    <tr><td>Board members, secretariat</td><td><code>board</code> and <code>secretariat</code> in <code>src/lib/content.ts</code></td></tr>
+    <tr><td>Add or remove a member</td><td><code>members</code> list in <code>src/lib/content.ts</code></td></tr>
+    <tr><td>Add a news item or event</td><td><code>news</code> list in <code>src/lib/content.ts</code>; put the photo in <code>public/images/news/</code></td></tr>
+    <tr><td>Add a publication</td><td><code>publications</code> list; include title, type, year, language, size in bytes and URL</td></tr>
+    <tr><td>New season of seed data</td><td>Add a row to <code>NATIONAL_Q</code> in <code>src/lib/seed-data.ts</code> (values in quintals)</td></tr>
+    <tr><td>Contact details</td><td><code>org.contact</code> in <code>src/lib/content.ts</code></td></tr>
+  </table>
+  <h3>Publish the change</h3>
+<pre><span class="c"># 1. check it locally</span>
+npm run dev
+<span class="c"># 2. make sure it builds</span>
+npm run build
+<span class="c"># 3a. GitHub method: push, and Vercel deploys automatically</span>
+git add .
+git commit -m "Add March 2027 seed forum news"
+git push
+<span class="c"># 3b. CLI method</span>
+vercel --prod</pre>
+  <div class="note">Requirement F10 asks that staff can update content without a developer. A headless CMS (for example Sanity, Strapi or Payload) can later replace <code>content.ts</code> so that editors work in a web form instead of code.</div>
+</section>
+
+<section>
+  <h2>8. Before launch checklist</h2>
+  <p>Based on the Phase 1 Requirement Analysis Report. Tick each item before pointing the public domain at the site.</p>
+  <table class="check">
+    <tr><th style="width:8%">✓</th><th style="width:14%">Ref.</th><th>Item</th></tr>
+    <tr><td>☐</td><td>C1</td><td>Every ESA fact on the site verified against an official document and logged in the Source-of-Truth Register.</td></tr>
+    <tr><td>☐</td><td>C3</td><td>Leader and staff photos and 80–150 word biographies supplied with written consent.</td></tr>
+    <tr><td>☐</td><td>C4</td><td>Members' consent to publish name, logo, region, crops and contact details.</td></tr>
+    <tr><td>☐</td><td>F9</td><td>Contact form connected to ESA's shared mailbox. <code>src/app/api/contact/route.ts</code> currently validates and accepts messages but does not send email; connect an email service (e.g. Resend, SendGrid or SMTP) and store its API key as a Vercel environment variable.</td></tr>
+    <tr><td>☐</td><td>C7</td><td>Privacy notice, accessibility statement and terms approved by the legal adviser.</td></tr>
+    <tr><td>☐</td><td>C9</td><td>Domain and Vercel team registered in ESA's name with two ESA administrators.</td></tr>
+    <tr><td>☐</td><td>N4</td><td>Two-step sign-in turned on for every Vercel and GitHub admin account.</td></tr>
+    <tr><td>☐</td><td>N2</td><td>Lighthouse mobile score of 85 or more on the home page.</td></tr>
+    <tr><td>☐</td><td>N7</td><td><code>SITE_URL</code> set to the real domain; <code>/sitemap.xml</code> submitted in Google Search Console.</td></tr>
+    <tr><td>☐</td><td>—</td><td>Remove the "Prototype for Phase 2 review" line from the footer (<code>src/components/site-footer.tsx</code>).</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>9. Troubleshooting</h2>
+  <table>
+    <tr><th style="width:36%">Problem</th><th>Fix</th></tr>
+    <tr><td><code>'npm' is not recognized</code></td><td>Node.js is not installed or the terminal was open before installing. Install Node.js, then open a new terminal.</td></tr>
+    <tr><td><code>Port 3000 is in use</code></td><td>Another app uses the port. Run <code>npm run dev -- --port 3100</code>, or close the other app.</td></tr>
+    <tr><td>Build fails with a TypeScript error</td><td>The message names the file and line. Fix it, then run <code>npm run build</code> again. A missing comma or quote in <code>content.ts</code> is the usual cause.</td></tr>
+    <tr><td>Fonts fail to download during build</td><td>The build fetches Google Fonts. Check your internet connection or proxy and retry.</td></tr>
+    <tr><td>Image not showing</td><td>Paths are case-sensitive on Vercel. <code>/images/news/Photo.JPG</code> and <code>/images/news/photo.jpg</code> are different files.</td></tr>
+    <tr><td>Strange errors after updates</td><td>Delete the <code>.next</code> folder and run <code>npm run build</code> again. If needed, also delete <code>node_modules</code> and run <code>npm install</code>.</td></tr>
+    <tr><td>Vercel build fails but local build works</td><td>Open the failed deployment → <b>Build Logs</b>. Check the Node.js version (22.x or 24.x) and that all files, including images, were committed.</td></tr>
+    <tr><td>Domain shows "Invalid Configuration"</td><td>The DNS records don't match yet. Re-check them against Vercel's Domains page and allow time to propagate.</td></tr>
+  </table>
+  <h3>Command summary</h3>
+<pre>npm install          <span class="c"># install dependencies (first time)</span>
+npm run dev          <span class="c"># development server, http://localhost:3000</span>
+npm run build        <span class="c"># production build</span>
+npm start            <span class="c"># run the production build locally</span>
+vercel               <span class="c"># preview deployment</span>
+vercel --prod        <span class="c"># production deployment</span></pre>
+</section>
+
+</body>
+</html>
